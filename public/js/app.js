@@ -80,24 +80,24 @@ const App = {
     let links = [];
     if (user.role === 'student') {
       links = [
-        { page: 'dashboard', label: '💳 My Wallet', icon: 'wallet' },
-        { page: 'payment', label: '💸 Make Payment', icon: 'payment' },
-        { page: 'history', label: '📜 Payment History', icon: 'history' },
-        { page: 'explorer', label: '⛓️ Chain Explorer', icon: 'explorer' }
+        { page: 'dashboard', label: 'My Wallet', icon: 'wallet' },
+        { page: 'payment', label: 'Make Payment', icon: 'payment' },
+        { page: 'history', label: 'Payment History', icon: 'history' },
+        { page: 'explorer', label: 'Chain Explorer', icon: 'explorer' }
       ];
     } else if (user.role === 'bursar' || user.role === 'registrar') {
       links = [
-        { page: 'admin-overview', label: '📊 Admin Overview', icon: 'overview' },
-        { page: 'admin-students', label: '👥 Student Ledgers', icon: 'students' },
-        { page: 'admin-transactions', label: '🧾 Transactions', icon: 'transactions' },
-        { page: 'admin-reconciliation', label: '⚖️ Reconciliation', icon: 'reconciliation' },
-        { page: 'explorer', label: '⛓️ Chain Explorer', icon: 'explorer' }
+        { page: 'admin-overview', label: 'Admin Overview', icon: 'overview' },
+        { page: 'admin-students', label: 'Student Ledgers', icon: 'students' },
+        { page: 'admin-transactions', label: 'Transactions', icon: 'transactions' },
+        { page: 'admin-reconciliation', label: 'Reconciliation', icon: 'reconciliation' },
+        { page: 'explorer', label: 'Chain Explorer', icon: 'explorer' }
       ];
     } else if (user.role === 'auditor') {
       links = [
-        { page: 'admin-transactions', label: '🧾 Ledger Audit', icon: 'transactions' },
-        { page: 'admin-reconciliation', label: '⚖️ Reconciliation', icon: 'reconciliation' },
-        { page: 'explorer', label: '⛓️ Chain Explorer', icon: 'explorer' }
+        { page: 'admin-transactions', label: 'Ledger Audit', icon: 'transactions' },
+        { page: 'admin-reconciliation', label: 'Reconciliation', icon: 'reconciliation' },
+        { page: 'explorer', label: 'Chain Explorer', icon: 'explorer' }
       ];
     }
 

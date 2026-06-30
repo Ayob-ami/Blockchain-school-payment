@@ -230,7 +230,7 @@ const Admin = {
         <tr>
           <td colspan="7">
             <div class="empty-state">
-              <div class="empty-state-icon">📭</div>
+              <div class="empty-state-icon"></div>
               <h4>No Transactions Found</h4>
               <p>No matching transactions.</p>
             </div>

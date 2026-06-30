@@ -146,7 +146,7 @@ const Wallet = {
       if (transactions.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-state-icon">📭</div>
+            <div class="empty-state-icon"></div>
             <h4>No Transactions Yet</h4>
             <p>Your payment history will appear here.</p>
           </div>
@@ -398,7 +398,7 @@ const Wallet = {
         <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('active')">&times;</button>
         
         <div class="receipt-header">
-          <div class="brand-icon">⛓️</div>
+          <div class="brand-icon"></div>
           <h2>Payment Receipt</h2>
           <p>BlockPay — Blockchain Payment System</p>
         </div>
@@ -440,7 +440,7 @@ const Wallet = {
         </div>
 
         <div class="receipt-actions">
-          <button class="btn btn-primary flex-1" onclick="window.print()">🖨️ Print Receipt</button>
+          <button class="btn btn-primary flex-1" onclick="window.print()">Print Receipt</button>
           <button class="btn btn-secondary flex-1" onclick="document.getElementById('modal-overlay').classList.remove('active')">Close</button>
         </div>
       </div>
@@ -482,7 +482,7 @@ const Wallet = {
           <tr>
             <td colspan="8">
               <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-icon"></div>
                 <h4>No Payment History</h4>
                 <p>Transactions will appear here after you make payments.</p>
               </div>
@@ -509,7 +509,7 @@ const Wallet = {
             <td>${Utils.statusBadge(tx.status || 'confirmed')}</td>
             <td>
               <button class="btn btn-secondary btn-sm" onclick="Wallet.showReceipt('${tx.id}')">
-                📄 Receipt
+                Receipt
               </button>
             </td>
           </tr>

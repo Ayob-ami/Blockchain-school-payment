@@ -50,7 +50,7 @@ const Explorer = {
     if (!chain || chain.length === 0) {
       container.innerHTML = `
         <div class="empty-state" style="width:100%">
-          <div class="empty-state-icon">⛓️</div>
+          <div class="empty-state-icon"></div>
           <h4>No Blocks Yet</h4>
           <p>The blockchain is empty. Make a payment to create the first block.</p>
         </div>
@@ -103,7 +103,7 @@ const Explorer = {
             </div>
           </div>
           <div class="block-tx-count">
-            📦 ${txCount} transaction${txCount !== 1 ? 's' : ''}
+            ${txCount} transaction${txCount !== 1 ? 's' : ''}
           </div>
         </div>
       `;
@@ -143,7 +143,7 @@ const Explorer = {
         resultContainer.style.display = 'flex';
         resultContainer.className = `chain-integrity-result ${isValid ? 'valid' : 'invalid'}`;
         resultContainer.innerHTML = `
-          <span class="icon">${isValid ? '✅' : '❌'}</span>
+          <span class="icon">${isValid ? '✓' : '✗'}</span>
           <span class="message">${isValid
             ? 'Chain integrity verified! All blocks are valid and properly linked.'
             : result.error || result.message || 'Chain integrity check failed! Tampering detected.'
@@ -156,7 +156,7 @@ const Explorer = {
           ? 'Blockchain integrity verified successfully!'
           : 'Chain integrity verification failed!',
         isValid ? 'success' : 'error',
-        '🔍 Chain Verification'
+        'Chain Verification'
       );
 
       // Highlight blocks briefly
@@ -180,14 +180,14 @@ const Explorer = {
         resultContainer.style.display = 'flex';
         resultContainer.className = 'chain-integrity-result invalid';
         resultContainer.innerHTML = `
-          <span class="icon">❌</span>
+          <span class="icon">✗</span>
           <span class="message">Error during verification: ${Utils.escapeHtml(err.message)}</span>
         `;
       }
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = '🔍 Verify Chain Integrity';
+        btn.innerHTML = 'Verify Chain Integrity';
       }
     }
   },
@@ -214,7 +214,7 @@ const Explorer = {
     let txHtml = '';
     if (transactions.length > 0) {
       txHtml = `
-        <h4 class="block-txns-title">📦 Transactions (${transactions.length})</h4>
+        <h4 class="block-txns-title">Transactions (${transactions.length})</h4>
         <div class="table-responsive">
           <table class="data-table">
             <thead>
@@ -259,7 +259,7 @@ const Explorer = {
         <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('active')">&times;</button>
         
         <div class="modal-header">
-          <h2>⛓️ Block #${index} ${isGenesis ? '(Genesis)' : ''}</h2>
+          <h2>Block #${index} ${isGenesis ? '(Genesis)' : ''}</h2>
           <p>Full block details and transactions</p>
         </div>
 

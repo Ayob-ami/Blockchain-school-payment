@@ -29,7 +29,7 @@
     <!-- Sidebar Navigation -->
     <nav id="sidebar" style="display: none;">
       <div class="sidebar-header">
-        <span class="logo-icon">⛓️</span>
+        <span class="logo-icon"></span>
         <span class="logo-text">BlockPay</span>
       </div>
       
@@ -46,7 +46,7 @@
           </div>
         </div>
         <button id="sidebar-logout-btn" class="btn btn-secondary btn-sm logout-btn">
-          <span>🚪 Logout</span>
+          <span>Logout</span>
         </button>
       </div>
     </nav>
@@ -59,7 +59,7 @@
         <div class="login-page">
           <div class="login-container animate-fade-in">
             <div class="login-brand">
-              <div class="brand-icon float-animation">⛓️</div>
+              <div class="brand-icon float-animation"></div>
               <h1>BlockPay</h1>
               <p class="brand-tagline">Blockchain-Based School Payment System</p>
               <span class="badge badge-info">CSC476 Research Project • Group 16</span>
@@ -87,7 +87,7 @@
               
               <!-- Demo Quick Access Chips -->
               <div class="demo-accounts">
-                <p class="demo-title">🔬 Demo Quick Access (Click to Fill):</p>
+                <p class="demo-title">Demo Quick Access (Click to Fill):</p>
                 <div class="demo-chips">
                   <button type="button" class="demo-chip" data-email="tobiloba@student.edu.ng" data-password="student123">
                     Student (Tobiloba)
@@ -127,7 +127,6 @@
         <!-- Wallet Stats Card Grid -->
         <div class="stats-grid">
           <div class="stat-card glass-card">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #06b6d4)">💰</div>
             <div class="stat-info">
               <span class="stat-label">Total Assigned Fees</span>
               <span id="stat-total-fees" class="stat-value">₦0.00</span>
@@ -135,7 +134,6 @@
           </div>
           
           <div class="stat-card glass-card">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669)">✅</div>
             <div class="stat-info">
               <span class="stat-label">Total Paid Fees</span>
               <span id="stat-total-paid" class="stat-value">₦0.00</span>
@@ -143,15 +141,13 @@
           </div>
 
           <div class="stat-card glass-card">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #b91c1c)">⏳</div>
             <div class="stat-info">
               <span class="stat-label">Outstanding Balance</span>
               <span id="stat-outstanding" class="stat-value">₦0.00</span>
             </div>
           </div>
 
-          <div id="enrollment-badge" class="stat-card glass-card" style="background: linear-gradient(135deg, #f59e0b, #d97706)">
-            <div class="stat-icon">📋</div>
+          <div id="enrollment-badge" class="stat-card glass-card">
             <div class="stat-info">
               <span class="stat-label">Enrollment Status</span>
               <span id="stat-enrollment" class="stat-value">Inactive</span>
@@ -219,14 +215,14 @@
               <div class="form-group">
                 <label>Simulated Gas Fee</label>
                 <div class="gas-fee-display">
-                  <span class="gas-icon">⚡</span>
+                  <span class="gas-icon"></span>
                   <span class="gas-value">0.05 L2 USD</span>
                   <span class="gas-desc">(Simulating low-cost rollup gas rates instead of high traditional gateway rates)</span>
                 </div>
               </div>
               
               <button type="submit" class="btn btn-primary btn-block" id="pay-button">
-                <span class="btn-text">💳 Process Payment</span>
+                <span class="btn-text">Process Payment</span>
                 <span class="btn-loader" style="display: none;"></span>
               </button>
             </form>
@@ -235,21 +231,21 @@
           <div class="glass-card payment-info-card">
             <h3>Why Blockchain payments?</h3>
             <div class="benefit-item">
-              <span class="benefit-icon">🛡️</span>
+              <span class="benefit-icon">01</span>
               <div class="benefit-content">
                 <h4>Tamper-proof receipts</h4>
                 <p>Every transaction generates an immutable proof linked directly to a mined block, completely eliminating paper receipt forgery.</p>
               </div>
             </div>
             <div class="benefit-item">
-              <span class="benefit-icon">⚡</span>
+              <span class="benefit-icon">02</span>
               <div class="benefit-content">
                 <h4>Atomic Settlement</h4>
                 <p>Smart contracts update enrollment tables instantly the moment the transaction settles. No manual reconciliation waits.</p>
               </div>
             </div>
             <div class="benefit-item">
-              <span class="benefit-icon">📉</span>
+              <span class="benefit-icon">03</span>
               <div class="benefit-content">
                 <h4>Near-zero Gateway Fees</h4>
                 <p>Avoid 1.5% to 3.9% traditional bank/card transaction gateway cuts. Average Layer-2 fee is fractions of a cent ($0.05).</p>
@@ -266,14 +262,14 @@
               <div class="block-cube"></div>
               <div class="block-cube"></div>
             </div>
-            <h2>⛓️ Mining Simulated Block...</h2>
+            <h2>Mining Simulated Block...</h2>
             <p>Processing transactions into decentralized ledger</p>
             
             <div class="mining-steps">
-              <div id="step-validate" class="mining-step">🔍 Validating transaction inputs & balances...</div>
-              <div id="step-hash" class="mining-step">🔐 Computing block SHA-256 cryptographic hash...</div>
-              <div id="step-consensus" class="mining-step">#️⃣ Running Proof-of-Authority (PoA) Consortium consensus...</div>
-              <div id="step-confirm" class="mining-step">✅ Atomic Smart Contract execution confirmed!</div>
+              <div id="step-validate" class="mining-step">Validating transaction inputs & balances...</div>
+              <div id="step-hash" class="mining-step">Computing block SHA-256 cryptographic hash...</div>
+              <div id="step-consensus" class="mining-step">Running Proof-of-Authority (PoA) Consortium consensus...</div>
+              <div id="step-confirm" class="mining-step">Atomic Smart Contract execution confirmed!</div>
             </div>
           </div>
         </div>
@@ -364,7 +360,7 @@
         <!-- Graphic Comparison of fees -->
         <div class="admin-dashboard-grid">
           <div class="glass-card comparison-card">
-            <h3>💰 Transaction Fee Savings Report</h3>
+            <h3>Transaction Fee Savings Report</h3>
             <p class="text-muted">Comparing simulated BlockPay L2 networks against traditional payment gateways (avg 2.5%)</p>
             
             <div class="comparison-bars mt-4">
@@ -389,7 +385,7 @@
           </div>
 
           <div class="glass-card">
-            <h3>⚡ Real-Time Ledger Activity Feed</h3>
+            <h3>Real-Time Ledger Activity Feed</h3>
             <div id="admin-activity-feed" class="admin-activity-feed">
               <!-- Dynamically populated via Admin.loadOverview() -->
             </div>
@@ -533,10 +529,10 @@
       <section id="page-explorer" class="page-section" style="display: none;">
         <div class="page-header">
           <div>
-            <h1>⛓️ Blockchain Explorer</h1>
+            <h1>Blockchain Explorer</h1>
             <p class="text-muted">Audit the live blocks and verify cryptographic signatures of the school consortium chain</p>
           </div>
-          <button id="verify-chain-btn" class="btn btn-primary">🔍 Verify Chain Integrity</button>
+          <button id="verify-chain-btn" class="btn btn-primary">Verify Chain Integrity</button>
         </div>
 
         <!-- Explorer Header stats -->
