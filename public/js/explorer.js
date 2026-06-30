@@ -73,7 +73,16 @@ const Explorer = {
 
       // Chain connector (between blocks)
       if (idx > 0) {
-        html += `<div class="chain-connector"></div>`;
+        html += `
+          <div class="chain-connector">
+            <svg width="40" height="20" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 10H40" stroke="rgba(255,255,255,0.08)" stroke-width="2" stroke-dasharray="4 4" />
+              <path d="M0 10H40" stroke="var(--accent-cyan)" stroke-width="2" stroke-dasharray="8 32" stroke-dashoffset="0">
+                <animate attributeName="stroke-dashoffset" values="40;0" dur="1.5s" repeatCount="indefinite" />
+              </path>
+            </svg>
+          </div>
+        `;
       }
 
       html += `

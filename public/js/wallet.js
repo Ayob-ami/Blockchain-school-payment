@@ -26,6 +26,18 @@ const Wallet = {
         walletEl.onclick = () => Utils.copyToClipboard(data.walletAddress || data.wallet_address || '');
       }
 
+      // Update Virtual Card details if present
+      const cardNameEl = document.getElementById('card-student-name');
+      const cardMatricEl = document.getElementById('card-matric-number');
+      const user = typeof Auth !== 'undefined' ? Auth.currentUser : null;
+      if (user) {
+        if (cardNameEl) cardNameEl.textContent = user.name;
+        if (cardMatricEl) {
+          const matricStr = user.matric_number || user.matricNo || user.matric_no || '000000';
+          cardMatricEl.textContent = `•••• •••• •••• ${matricStr}`;
+        }
+      }
+
       // Update stat cards
       const totalFees = data.totalFees || data.total_fees || 0;
       const totalPaid = data.totalPaid || data.total_paid || 0;
@@ -35,6 +47,31 @@ const Wallet = {
       this.animateValue('stat-total-fees', totalFees);
       this.animateValue('stat-total-paid', totalPaid);
       this.animateValue('stat-outstanding', outstanding);
+
+      // Animate progress ring
+      const pct = Utils.percentage(totalPaid, totalFees);
+      const ringFill = document.getElementById('progress-ring-fill');
+      const ringText = document.getElementById('progress-ring-text');
+      if (ringFill && ringText) {
+        const circ = 251.2;
+        const duration = 1000;
+        const startVal = 0;
+        const startTime = performance.now();
+        
+        function updateRing(timestamp) {
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const val = Math.round(startVal + (pct - startVal) * eased);
+          
+          ringText.textContent = `${val}%`;
+          const offset = circ - (val / 100) * circ;
+          ringFill.style.strokeDashoffset = offset;
+          
+          if (progress < 1) requestAnimationFrame(updateRing);
+        }
+        requestAnimationFrame(updateRing);
+      }
 
       const enrollEl = document.getElementById('stat-enrollment');
       if (enrollEl) {

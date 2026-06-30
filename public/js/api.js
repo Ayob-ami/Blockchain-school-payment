@@ -473,7 +473,6 @@ const API = {
       }
 
       // Generate Tx Hashes using SubtleCrypto
-      const time = new Date().toISOString();
       const txHashRaw = `tx_${user.wallet_address}_${feeType}_${amount}_${time}_${Math.random()}`;
       const txHash = '0x' + await this.cryptoHash(txHashRaw);
       const receiptHash = 'rcpt_' + await this.cryptoHash(txHashRaw + '_receipt');

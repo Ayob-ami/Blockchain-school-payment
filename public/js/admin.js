@@ -60,6 +60,26 @@ const Admin = {
       // Load recent activity
       await this.loadRecentActivity(data.recentActivity || data.recent_activity || []);
 
+      // Fetch transactions for charting
+      let transactions = [];
+      try {
+        const txData = await API.getTransactions();
+        transactions = txData.transactions || txData || [];
+      } catch (err) {
+        console.warn('Failed to fetch transactions for admin overview charts', err);
+      }
+
+      // Group by fee category and render donut
+      const feeGroups = {};
+      transactions.filter(t => (t.status || '').toLowerCase() === 'confirmed').forEach(tx => {
+        const type = tx.feeType || tx.fee_type || 'Other';
+        feeGroups[type] = (feeGroups[type] || 0) + (tx.amount || 0);
+      });
+      this.renderFeeDistribution(feeGroups);
+
+      // Render transaction volume
+      this.renderTransactionVolume(transactions);
+
     } catch (err) {
       Utils.showNotification(err.message || 'Failed to load admin overview', 'error');
     }
@@ -305,6 +325,121 @@ const Admin = {
     } catch (err) {
       Utils.showNotification(err.message || 'Failed to load reconciliation', 'error');
     }
+  },
+
+  /**
+   * Render dynamic Fee Distribution Donut Chart using inline SVG
+   */
+  renderFeeDistribution(feeGroups) {
+    const wrapper = document.getElementById('donut-chart-wrapper');
+    if (!wrapper) return;
+    
+    const categories = Object.keys(feeGroups);
+    const values = Object.values(feeGroups);
+    const total = values.reduce((s, v) => s + v, 0);
+    
+    if (total === 0) {
+      wrapper.innerHTML = `<p class="text-muted text-center p-4">No payment data available for distribution.</p>`;
+      return;
+    }
+    
+    const colors = ['#a855f7', '#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
+    
+    let accumulatedPercent = 0;
+    const r = 24; // circle radius
+    const circ = 2 * Math.PI * r; // ≈ 150.8
+    
+    let circlesHtml = '';
+    let legendHtml = '';
+    
+    categories.forEach((cat, idx) => {
+      const val = feeGroups[cat];
+      const pct = (val / total) * 100;
+      const strokeColor = colors[idx % colors.length];
+      
+      const strokeWidthVal = (pct / 100) * circ;
+      const rotateOffset = (accumulatedPercent / 100) * 360;
+      accumulatedPercent += pct;
+      
+      circlesHtml += `
+        <circle class="donut-segment" cx="50" cy="50" r="${r}" fill="transparent" 
+                stroke="${strokeColor}" stroke-width="8" 
+                stroke-dasharray="${strokeWidthVal} ${circ - strokeWidthVal}" 
+                stroke-dashoffset="0" transform="rotate(${rotateOffset - 90} 50 50)"
+                title="${Utils.escapeHtml(Utils.formatFeeType(cat))}: ${Utils.formatNaira(val)} (${pct.toFixed(1)}%)">
+        </circle>
+      `;
+      
+      legendHtml += `
+        <div class="legend-item">
+          <span class="legend-dot" style="background: ${strokeColor}"></span>
+          <span style="flex:1">${Utils.escapeHtml(Utils.formatFeeType(cat))}</span>
+          <span style="font-weight:bold">${pct.toFixed(0)}%</span>
+        </div>
+      `;
+    });
+    
+    wrapper.innerHTML = `
+      <div class="donut-chart-container">
+        <svg class="donut-chart-svg" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="${r}" fill="transparent" stroke="rgba(255,255,255,0.02)" stroke-width="8" />
+          ${circlesHtml}
+          <circle cx="50" cy="50" r="${r - 4}" fill="var(--bg-tertiary)" />
+          <text class="donut-center-text" x="50" y="48" dominant-baseline="middle" text-anchor="middle">${Utils.formatNaira(total).split('.')[0]}</text>
+          <text class="donut-center-label" x="50" y="58" dominant-baseline="middle" text-anchor="middle">TOTAL SETTLED</text>
+        </svg>
+        <div class="chart-legend">
+          ${legendHtml}
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Render dynamic horizontal bar chart representing ledger transactions volume
+   */
+  renderTransactionVolume(transactions) {
+    const wrapper = document.getElementById('bar-chart-wrapper');
+    if (!wrapper) return;
+    
+    const confirmedTx = transactions.filter(t => (t.status || '').toLowerCase() === 'confirmed');
+    
+    if (confirmedTx.length === 0) {
+      wrapper.innerHTML = `<p class="text-muted text-center p-4">No confirmed transaction volume data.</p>`;
+      return;
+    }
+    
+    // Group transactions by date
+    const dateGroups = {};
+    confirmedTx.forEach(tx => {
+      const dateStr = Utils.formatDateShort(tx.timestamp || tx.date || tx.createdAt || tx.created_at);
+      dateGroups[dateStr] = (dateGroups[dateStr] || 0) + 1;
+    });
+    
+    const dates = Object.keys(dateGroups).slice(-6); // Last 6 days
+    const maxVal = Math.max(...Object.values(dateGroups), 1);
+    
+    let barsHtml = '';
+    dates.forEach(date => {
+      const count = dateGroups[date];
+      const pct = (count / maxVal) * 100;
+      
+      barsHtml += `
+        <div class="bar-chart-row">
+          <span class="bar-chart-label" title="${Utils.escapeHtml(date)}">${Utils.escapeHtml(date)}</span>
+          <div class="bar-chart-bar-wrap">
+            <div class="bar-chart-bar-fill" style="width: ${pct}%"></div>
+          </div>
+          <span class="bar-chart-val">${count} Tx${count !== 1 ? 's' : ''}</span>
+        </div>
+      `;
+    });
+    
+    wrapper.innerHTML = `
+      <div class="bar-chart-container">
+        ${barsHtml}
+      </div>
+    `;
   }
 };
 
