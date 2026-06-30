@@ -144,8 +144,8 @@ const API = {
     return this.request('GET', '/payments/balance');
   },
 
-  makePayment(feeType, amount) {
-    return this.request('POST', '/payments/pay', { feeType, amount: Number(amount) });
+  makePayment(feeType, amount, simulateFailure = false) {
+    return this.request('POST', '/payments/pay', { feeType, amount: Number(amount), simulateFailure });
   },
 
   getHistory() {
@@ -432,7 +432,7 @@ const API = {
       const user = getLoggedInUser();
       if (!user || user.role !== 'student') throw new Error('Unauthorized');
 
-      const { feeType, amount } = body;
+      const { feeType, amount, simulateFailure } = body;
       const fs = this.mockDb.feeSchedules.find(f => f.fee_type === feeType);
       if (!fs) throw new Error('Invalid fee type');
 
@@ -443,8 +443,33 @@ const API = {
       const totalPaid = studentPayments.reduce((sum, p) => sum + p.amount, 0);
       const remaining = fs.amount - totalPaid;
 
-      if (amount <= 0 || amount > remaining) {
-        throw new Error('Invalid payment amount');
+      const time = new Date().toISOString();
+
+      if (amount <= 0 || amount > remaining || simulateFailure) {
+        // Create Failed Payment Object for history tracking
+        const failedPayment = {
+          id: this.mockDb.payments.length + 1,
+          user_id: user.id,
+          fee_type: feeType,
+          amount: amount,
+          naira_amount: amount,
+          usdt_equivalent: +(amount / 1580).toFixed(2),
+          status: 'failed',
+          block_index: null,
+          tx_hash: '0x_failed_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+          receipt_hash: null,
+          payment_method: 'Simulated Bank Transfer',
+          gas_fee: 0.05,
+          created_at: time
+        };
+        this.mockDb.payments.push(failedPayment);
+        this.saveMockDb();
+
+        if (simulateFailure) {
+          throw new Error('Consensus Rejection: Double-spending signature conflict detected at Partner Bank Node');
+        } else {
+          throw new Error(`Smart Contract Rejection: Payment amount of ₦${amount.toLocaleString()} exceeds outstanding balance of ₦${remaining.toLocaleString()}`);
+        }
       }
 
       // Generate Tx Hashes using SubtleCrypto

@@ -351,12 +351,6 @@ const Wallet = {
       const remaining = total - paid;
 
       if (amount <= 0 || amount > remaining) {
-        if (steps[0]) {
-          steps[0].classList.remove('active');
-          steps[0].classList.add('failed');
-          steps[0].textContent = `Contract Rejection: Payment amount of ₦${amount.toLocaleString()} exceeds outstanding balance of ₦${remaining.toLocaleString()}`;
-        }
-        await Utils.sleep(2500);
         throw new Error(`Smart Contract Rejection: Payment amount of ₦${amount.toLocaleString()} exceeds outstanding balance of ₦${remaining.toLocaleString()}`);
       }
 
@@ -371,17 +365,7 @@ const Wallet = {
       if (steps[2]) steps[2].classList.add('active');
       await Utils.sleep(800);
 
-      if (forceFailure) {
-        if (steps[2]) {
-          steps[2].classList.remove('active');
-          steps[2].classList.add('failed');
-          steps[2].textContent = 'Consensus Denied: Double-spending signature conflict detected at Partner Bank Node';
-        }
-        await Utils.sleep(2500);
-        throw new Error('Consensus Rejection: Double-spending signature conflict detected at Partner Bank Node');
-      }
-
-      const result = await API.makePayment(feeType, amount);
+      const result = await API.makePayment(feeType, amount, forceFailure);
       if (steps[2]) { steps[2].classList.remove('active'); steps[2].classList.add('complete'); }
 
       // --- Step 4: Confirmed ---
@@ -418,8 +402,16 @@ const Wallet = {
       await this.loadPaymentPage();
 
     } catch (err) {
+      // Find the currently active step and flag it as failed
+      const activeStep = steps.find(s => s && s.classList.contains('active'));
+      if (activeStep) {
+        activeStep.classList.remove('active');
+        activeStep.classList.add('failed');
+        activeStep.textContent = err.message;
+      }
+      
       // Hide overlay after a brief delay so they see the red step
-      await Utils.sleep(500);
+      await Utils.sleep(2500);
       if (overlay) overlay.style.display = 'none';
 
       Utils.showNotification(err.message || 'Payment failed!', 'error');
@@ -549,9 +541,11 @@ const Wallet = {
             </td>
             <td>${Utils.statusBadge(tx.status || 'confirmed')}</td>
             <td>
+              ${(tx.status || '').toLowerCase() === 'failed' ? '—' : `
               <button class="btn btn-secondary btn-sm" onclick="Wallet.showReceipt('${tx.id}')">
                 Receipt
               </button>
+              `}
             </td>
           </tr>
         `;

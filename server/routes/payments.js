@@ -104,7 +104,7 @@ router.get('/balance', (req, res) => {
 // ---------------------------------------------------------------------------
 router.post('/pay', async (req, res) => {
   try {
-    const { feeType, amount } = req.body;
+    const { feeType, amount, simulateFailure } = req.body;
 
     // Validate input
     if (!feeType || !amount) {
@@ -116,8 +116,21 @@ router.post('/pay', async (req, res) => {
       return res.status(400).json({ error: 'Amount must be a positive number.' });
     }
 
-    // Simulate a 2-second "bank confirmation" delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Simulate a 1.5-second delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Handle double-spending consensus failure simulation
+    if (simulateFailure) {
+      const txHash = '0x_failed_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      db.prepare(
+        `INSERT INTO payments (user_id, fee_type, amount, naira_amount, usdt_equivalent, status, block_index, tx_hash, receipt_hash, gas_fee, created_at)
+         VALUES (?, ?, ?, ?, ?, 'failed', NULL, ?, NULL, 0.05, datetime('now'))`
+      ).run(req.user.id, feeType, parsedAmount, parsedAmount, +(parsedAmount / 1580).toFixed(2), txHash);
+
+      return res.status(400).json({
+        error: 'Consensus Rejection: Double-spending signature conflict detected at Partner Bank Node'
+      });
+    }
 
     // Execute payment through the smart contract
     const result = TuitionPaymentContract.execute(db, blockchain, {
@@ -140,6 +153,22 @@ router.post('/pay', async (req, res) => {
     });
   } catch (err) {
     console.error('[Payments] /pay error:', err.message);
+    
+    // Save validation/rejection failure record to database for audit trail
+    try {
+      const { feeType, amount } = req.body;
+      const parsedAmount = parseFloat(amount) || 0;
+      if (feeType && parsedAmount > 0) {
+        const txHash = '0x_failed_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        db.prepare(
+          `INSERT INTO payments (user_id, fee_type, amount, naira_amount, usdt_equivalent, status, block_index, tx_hash, receipt_hash, gas_fee, created_at)
+           VALUES (?, ?, ?, ?, ?, 'failed', NULL, ?, NULL, 0.05, datetime('now'))`
+        ).run(req.user.id, feeType, parsedAmount, parsedAmount, +(parsedAmount / 1580).toFixed(2), txHash);
+      }
+    } catch (dbErr) {
+      console.error('[Payments] Failed to record failed transaction in database:', dbErr.message);
+    }
+
     // Business logic errors (thrown by the contract) return 400
     if (err.message.includes('exceeds') || err.message.includes('fully paid') ||
         err.message.includes('Invalid fee') || err.message.includes('greater than')) {
