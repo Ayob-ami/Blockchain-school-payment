@@ -1,0 +1,20 @@
+{
+  "name": "blockchain-school-payment-system",
+  "version": "1.0.0",
+  "description": "A Blockchain-Based School Payment System — CSC476 Group 16 Research Project",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "keywords": ["blockchain", "school", "payment", "smart-contract", "simulation"],
+  "author": "Group 16 — CSC476",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.0",
+    "better-sqlite3": "^11.7.0",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5"
+  }
+}
