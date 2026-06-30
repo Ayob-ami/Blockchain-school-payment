@@ -315,38 +315,78 @@ const Wallet = {
       document.getElementById('step-confirm')
     ];
 
-    // Reset steps
-    steps.forEach(s => {
-      if (s) {
-        s.classList.remove('active', 'complete');
-      }
-    });
+    // Reset step states, classes, and text contents to original
+    if (steps[0]) {
+      steps[0].classList.remove('active', 'complete', 'failed');
+      steps[0].textContent = 'Validating transaction inputs & balances...';
+    }
+    if (steps[1]) {
+      steps[1].classList.remove('active', 'complete', 'failed');
+      steps[1].textContent = 'Computing block SHA-256 cryptographic hash...';
+    }
+    if (steps[2]) {
+      steps[2].classList.remove('active', 'complete', 'failed');
+      steps[2].textContent = 'Running Proof-of-Authority (PoA) Consortium consensus...';
+    }
+    if (steps[3]) {
+      steps[3].classList.remove('active', 'complete', 'failed');
+      steps[3].textContent = 'Atomic Smart Contract execution confirmed!';
+    }
+
+    const forceFailure = document.getElementById('simulate-failure-checkbox')?.checked || false;
 
     // Show mining overlay
     if (overlay) overlay.style.display = 'flex';
 
     try {
-      // Step 1: Validating
+      // --- Step 1: Validating ---
       if (steps[0]) steps[0].classList.add('active');
       await Utils.sleep(800);
 
-      // Step 2: Computing hash
+      // Perform actual smart contract validation check client-side first
+      const fees = this.balanceData?.fees || this.balanceData?.feeBreakdown || this.balanceData?.fee_breakdown || [];
+      const feeItem = fees.find(f => (f.feeType || f.fee_type || f.name) === feeType);
+      const total = feeItem?.amount || feeItem?.total || 0;
+      const paid = feeItem?.paid || feeItem?.totalPaid || 0;
+      const remaining = total - paid;
+
+      if (amount <= 0 || amount > remaining) {
+        if (steps[0]) {
+          steps[0].classList.remove('active');
+          steps[0].classList.add('failed');
+          steps[0].textContent = `Contract Rejection: Payment amount of ₦${amount.toLocaleString()} exceeds outstanding balance of ₦${remaining.toLocaleString()}`;
+        }
+        await Utils.sleep(2500);
+        throw new Error(`Smart Contract Rejection: Payment amount of ₦${amount.toLocaleString()} exceeds outstanding balance of ₦${remaining.toLocaleString()}`);
+      }
+
       if (steps[0]) { steps[0].classList.remove('active'); steps[0].classList.add('complete'); }
+
+      // --- Step 2: Computing hash ---
       if (steps[1]) steps[1].classList.add('active');
       await Utils.sleep(1000);
-
-      // Step 3: PoA consensus — actual API call here
       if (steps[1]) { steps[1].classList.remove('active'); steps[1].classList.add('complete'); }
+
+      // --- Step 3: PoA consensus ---
       if (steps[2]) steps[2].classList.add('active');
-
-      const result = await API.makePayment(feeType, amount);
-
       await Utils.sleep(800);
 
-      // Step 4: Confirmed!
+      if (forceFailure) {
+        if (steps[2]) {
+          steps[2].classList.remove('active');
+          steps[2].classList.add('failed');
+          steps[2].textContent = 'Consensus Denied: Double-spending signature conflict detected at Partner Bank Node';
+        }
+        await Utils.sleep(2500);
+        throw new Error('Consensus Rejection: Double-spending signature conflict detected at Partner Bank Node');
+      }
+
+      const result = await API.makePayment(feeType, amount);
       if (steps[2]) { steps[2].classList.remove('active'); steps[2].classList.add('complete'); }
+
+      // --- Step 4: Confirmed ---
       if (steps[3]) steps[3].classList.add('active');
-      await Utils.sleep(600);
+      await Utils.sleep(800);
       if (steps[3]) { steps[3].classList.remove('active'); steps[3].classList.add('complete'); }
 
       await Utils.sleep(400);
@@ -359,7 +399,7 @@ const Wallet = {
       Utils.showNotification(
         `Payment of ${Utils.formatNaira(amount)} confirmed in Block #${blockNum}!`,
         'success',
-        '⛓️ Block Mined'
+        'Block Mined'
       );
 
       // Show receipt
@@ -378,7 +418,8 @@ const Wallet = {
       await this.loadPaymentPage();
 
     } catch (err) {
-      // Hide overlay
+      // Hide overlay after a brief delay so they see the red step
+      await Utils.sleep(500);
       if (overlay) overlay.style.display = 'none';
 
       Utils.showNotification(err.message || 'Payment failed!', 'error');

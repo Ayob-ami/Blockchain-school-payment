@@ -376,6 +376,13 @@
   border-color: var(--color-success);
 }
 
+.mining-step.failed {
+  color: var(--color-error);
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+  font-weight: var(--font-semibold);
+}
+
 /* ── Fee comparison widget ── */
 .comparison-card .savings-container {
   display: flex;
